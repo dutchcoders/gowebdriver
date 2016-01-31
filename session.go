@@ -46,7 +46,6 @@ func (wds *Session) Screenshot() (io.Reader, error) {
 	image := &bytes.Buffer{}
 
 	if err := wds.wd.Do(req, image); err != nil {
-		panic(err)
 		return nil, err
 	}
 

@@ -32,7 +32,12 @@ func TestScreenshot(t *testing.T) {
 	if _, err = session.WindowSize(2048, 1680); err != nil {
 		t.Error(err)
 	}
+
 	if _, err = session.Url("http://httpbin.org/headers"); err != nil {
+		t.Error(err)
+	}
+
+	if _, err := session.Source(); err != nil {
 		t.Error(err)
 	}
 

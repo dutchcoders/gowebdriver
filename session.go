@@ -23,6 +23,20 @@ func (wds *Session) Close() (*Session, error) {
 
 }
 
+func (wds *Session) Source() (io.Reader, error) {
+	req, err := wds.wd.NewRequest("GET", fmt.Sprintf("/wd/hub/session/%s/source", wds.SessionId), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	source := &bytes.Buffer{}
+	if err := wds.wd.Do(req, source); err != nil {
+		return nil, err
+	}
+
+	return source, nil
+}
+
 func (wds *Session) Screenshot() (io.Reader, error) {
 	req, err := wds.wd.NewRequest("GET", fmt.Sprintf("/wd/hub/session/%s/screenshot", wds.SessionId), nil)
 	if err != nil {

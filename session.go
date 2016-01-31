@@ -7,17 +7,17 @@ import (
 	"io"
 )
 
-func (wds *Session) Close() (*Session, error) {
+func (wds *Session) Close() error {
 	req, err := wds.wd.NewRequest("DELETE", fmt.Sprintf("/wd/hub/session/%s", wds.SessionId), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := wds.wd.Do(req, &wds); err != nil {
-		return nil, err
+		return err
 	}
 
-	return wds, nil
+	return nil
 
 }
 
@@ -51,7 +51,7 @@ func (wds *Session) Screenshot() (io.Reader, error) {
 	return r, nil
 }
 
-func (wds *Session) SetWindowSize(width, height int) (*Session, error) {
+func (wds *Session) SetWindowSize(width, height int) error {
 	body := struct {
 		Width  int `json:"width"`
 		Height int `json:"height"`
@@ -62,14 +62,14 @@ func (wds *Session) SetWindowSize(width, height int) (*Session, error) {
 
 	req, err := wds.wd.NewRequest("POST", fmt.Sprintf("/wd/hub/session/%s/window/current/size", wds.SessionId), body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := wds.wd.Do(req, &wds); err != nil {
-		return nil, err
+		return err
 	}
 
-	return wds, nil
+	return nil
 
 }
 

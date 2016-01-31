@@ -1,6 +1,7 @@
 package webdriver
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"testing"
@@ -29,12 +30,18 @@ func TestScreenshot(t *testing.T) {
 
 	defer session.Close()
 
-	if _, err = session.WindowSize(2048, 1680); err != nil {
+	if _, err = session.SetWindowSize(2048, 1680); err != nil {
 		t.Error(err)
 	}
 
-	if _, err = session.Url("http://httpbin.org/headers"); err != nil {
+	if err = session.SetUrl("http://httpbin.org/headers"); err != nil {
 		t.Error(err)
+	}
+
+	if u, err := session.Url(); err != nil {
+		t.Error(err)
+	} else if u != "http://httpbin.org/headers" {
+		t.Error(fmt.Errorf("Incorrect url"))
 	}
 
 	if _, err := session.Source(); err != nil {

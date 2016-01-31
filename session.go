@@ -5,13 +5,11 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	"log"
 )
 
 func (wds *Session) Close() (*Session, error) {
 	req, err := wds.wd.NewRequest("DELETE", fmt.Sprintf("/wd/hub/session/%s", wds.SessionId), nil)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -53,7 +51,7 @@ func (wds *Session) Screenshot() (io.Reader, error) {
 	return r, nil
 }
 
-func (wds *Session) WindowSize(width, height int) (*Session, error) {
+func (wds *Session) SetWindowSize(width, height int) (*Session, error) {
 	body := struct {
 		Width  int `json:"width"`
 		Height int `json:"height"`
@@ -64,7 +62,6 @@ func (wds *Session) WindowSize(width, height int) (*Session, error) {
 
 	req, err := wds.wd.NewRequest("POST", fmt.Sprintf("/wd/hub/session/%s/window/current/size", wds.SessionId), body)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -75,7 +72,75 @@ func (wds *Session) WindowSize(width, height int) (*Session, error) {
 	return wds, nil
 
 }
-func (wds *Session) Url(url string) (*Session, error) {
+
+func (wds *Session) Back() error {
+	req, err := wds.wd.NewRequest("POST", fmt.Sprintf("/wd/hub/session/%s/back", wds.SessionId), nil)
+	if err != nil {
+		return err
+	}
+
+	if err := wds.wd.Do(req, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (wds *Session) Forward() error {
+	req, err := wds.wd.NewRequest("POST", fmt.Sprintf("/wd/hub/session/%s/forward", wds.SessionId), nil)
+	if err != nil {
+		return err
+	}
+
+	if err := wds.wd.Do(req, &wds); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (wds *Session) Refresh() error {
+	req, err := wds.wd.NewRequest("POST", fmt.Sprintf("/wd/hub/session/%s/refresh", wds.SessionId), nil)
+	if err != nil {
+		return err
+	}
+
+	if err := wds.wd.Do(req, &wds); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (wds *Session) Title() (string, error) {
+	req, err := wds.wd.NewRequest("GET", fmt.Sprintf("/wd/hub/session/%s/title", wds.SessionId), nil)
+	if err != nil {
+		return "", err
+	}
+
+	u := ""
+	if err := wds.wd.Do(req, &u); err != nil {
+		return "", err
+	}
+
+	return u, nil
+}
+
+func (wds *Session) Url() (string, error) {
+	req, err := wds.wd.NewRequest("GET", fmt.Sprintf("/wd/hub/session/%s/url", wds.SessionId), nil)
+	if err != nil {
+		return "", err
+	}
+
+	u := ""
+	if err := wds.wd.Do(req, &u); err != nil {
+		return "", err
+	}
+
+	return u, nil
+}
+
+func (wds *Session) SetUrl(url string) error {
 	body := struct {
 		Url string `json:"url"`
 	}{
@@ -84,14 +149,12 @@ func (wds *Session) Url(url string) (*Session, error) {
 
 	req, err := wds.wd.NewRequest("POST", fmt.Sprintf("/wd/hub/session/%s/url", wds.SessionId), body)
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		return err
 	}
 
 	if err := wds.wd.Do(req, &wds); err != nil {
-		return nil, err
+		return err
 	}
 
-	return wds, nil
-
+	return nil
 }
